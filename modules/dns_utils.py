@@ -73,4 +73,37 @@ def find_subdomains(domain: str) -> List[str]:
         logging.error(f"Error finding subdomains: {e}")
         return [f"Error: {e}"]
 
-   
+def get_domain_certificate_info(domain: str) -> List[Dict[str, str]]:
+    """
+    Fetch detailed certificate information about the domain from crt.sh.
+
+    Args:
+        domain (str): The domain to fetch certificate details for.
+
+    Returns:
+        List[Dict[str, str]]: A list of dictionaries containing certificate details.
+    """
+    try:
+        url = f"https://crt.sh/?q=%25.{domain}&output=json"
+        response = requests.get(url, timeout=10)
+        if response.status_code == 200:
+            data = response.json()
+            certificates = []
+            for entry in data:
+                cert_info = {
+                    "crt.sh ID": entry.get("id"),
+                    "Logged At": entry.get("logged_at"),
+                    "Not Before": entry.get("not_before"),
+                    "Not After": entry.get("not_after"),
+                    "Common Name": entry.get("common_name"),
+                    "Matching Identities": entry.get("name_value"),
+                    "Issuer Name": entry.get("issuer_name"),
+                }
+                certificates.append(cert_info)
+            return certificates
+        else:
+            logging.error(f"Failed to fetch certificate details: {response.status_code}")
+            return [{"Error": f"HTTP {response.status_code}"}]
+    except Exception as e:
+        logging.error(f"Error fetching certificate details: {e}")
+        return [{"Error": str(e)}]

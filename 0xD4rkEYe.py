@@ -1,4 +1,4 @@
-from modules.dns_utils import get_dns_records, check_dnssec, find_subdomains
+from modules.dns_utils import get_dns_records, check_dnssec, find_subdomains, get_domain_certificate_info
 from modules.ip_utils import get_ip_info, get_ip_geolocation, reverse_dns_lookup
 from modules.network_utils import get_whois_info, get_http_headers, get_ssl_certificate_info, run_nmap
 from modules.ui_utils import print_banner, display_table
@@ -52,6 +52,14 @@ def main() -> None:
     # Find and display subdomains
     subdomains = find_subdomains(domain)
     console.print(Panel(f"Subdomains found: {', '.join(subdomains) if subdomains else 'No subdomains found.'}", style="bold green"))
+
+    # Fetch and display detailed certificate information
+    cert_info = get_domain_certificate_info(domain)
+    if cert_info:
+        for cert in cert_info:
+            display_table(cert, "Certificate Information")
+    else:
+        console.print(Panel("No certificate information found.", style="bold red"))
 
     # Get and display HTTP headers
     http_headers = get_http_headers(domain)
