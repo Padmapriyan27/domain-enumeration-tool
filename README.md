@@ -1,22 +1,25 @@
 # 0xD4rkEYe Domain Enumeration Tool
 
-## Beta v0.2
+## Beta v0.3
 
 ### Overview
 
-The **Domain Enumeration Tool** is a Unix-only, Python-based tool designed for comprehensive domain analysis. It gathers extensive information about a target domain, including DNS records, WHOIS data, IP information, SSL certificate details, HTTP headers, Nmap scan results, subdomains, and certificate transparency logs (via crt.sh).
+The **Domain Enumeration Tool** is a unix-only  Python-based utility designed to perform an in-depth analysis of a target domain. This tool gathers a variety of information including DNS records, WHOIS data, IP information, geolocation data, SSL certificate details, HTTP headers, Nmap scan results, subdomains, and more. It is an essential resource for security researchers, penetration testers, and anyone looking to perform a comprehensive analysis of domain assets.
 
 ### Features
 
-- **DNS Records**: Retrieves various DNS records, including A, MX, TXT, CNAME, SRV, and more.
-- **WHOIS Information**: Fetches detailed WHOIS data for the domain.
-- **IP Information**: Resolves the domain's IP address, performs reverse DNS lookups, and retrieves IP geolocation data.
-- **Geolocation**: Provides the physical location of the domain's IP address.
-- **SSL Certificate**: Extracts SSL certificate details for domains with HTTPS.
-- **HTTP Headers**: Retrieves HTTP headers for the domain.
-- **Nmap Scan**: Identifies open ports and services running on the domain.
-- **Subdomain Discovery**: Uses crt.sh to find and list subdomains.
-- **Certificate Transparency Logs**: Fetches detailed certificate information, including crt.sh ID, validity dates, and issuers.
+- **DNS Records**: Retrieves multiple DNS record types, such as A, MX, TXT, CNAME, SRV, etc.
+- **WHOIS Information**: Fetches detailed WHOIS data for the domain, including registrar and contact information.
+- **IP Information**: Resolves the domain to its IP address, conducts reverse DNS lookups, and provides geolocation data.
+- **Geolocation**: Identifies the physical location of the domain’s IP address
+- **SSL Certificate**: Extracts detailed SSL certificate information for domains with HTTPS, including issuer, validity dates, and more.
+- **HTTP Headers**: Retrieves and displays HTTP headers from the domain.
+- **Nmap Scan**: Performs an Nmap scan to detect open ports and services associated with the domain.
+- **Subdomain Discovery**: Finds subdomains using domain-based queries and certificate transparency logs.
+- **Emails Extraction**: Finds email addresses associated with the domain by scraping WHOIS and DNS data.
+- **Zone Transfer Test**: Verifies if a DNS zone transfer is allowed.
+- **DNSSEC Check**: Checks the status of DNSSEC for the domain.
+- **Robots.txt Scraping**: Fetches the robots.txt file to determine any rules regarding search engine crawling.
 
 ---
 
@@ -28,6 +31,7 @@ The **Domain Enumeration Tool** is a Unix-only, Python-based tool designed for c
   - `dnspython`
   - `rich`
   - `pyfiglet`
+  - `beautifulsoup4`
 
 Install the required libraries by running:
 
@@ -63,7 +67,7 @@ pip install -r requirements.txt
 
 ### Running the Tool
 
-To use the tool, run the script with a domain as the argument:
+To use the tool, simply run the script with the domain as the argument:
 
 ```bash
 python 0xD4rkEYe.py example.com
@@ -71,7 +75,7 @@ python 0xD4rkEYe.py example.com
 
 ### Example Output
 
-When executed, the tool gathers and displays detailed information about the domain:
+The tool will gather and display detailed information about the domain:
 
 ```bash
 Domain: example.com
@@ -87,13 +91,9 @@ Domain: example.com
   - sub1.example.com
   - sub2.example.com
 
-- Certificate Transparency Logs:
-  - crt.sh ID: 123456789
-    Logged At: 2024-12-01
-    Not Before: 2024-01-01
-    Not After: 2025-01-01
-    Common Name: example.com
-    Issuer Name: CN=Let's Encrypt Authority X3
+- Emails:
+  - contact@example.com
+  - support@example.com
 
 - HTTP Headers:
   - Content-Type: text/html
@@ -108,6 +108,9 @@ Domain: example.com
 - Nmap Results:
   - Ports: 80, 443
   - Services: HTTP, HTTPS
+
+- DNSSEC Status:
+  - Enabled
 ```
 
 ---
@@ -118,25 +121,41 @@ Domain: example.com
 The main script that orchestrates all domain enumeration tasks.
 
 ### 2. **`modules/dns_utils.py`**
-Contains functions for querying DNS records, checking DNSSEC status, finding subdomains, and retrieving certificate transparency logs via crt.sh.
+Contains functions for:
+- Querying DNS records (A, MX, TXT, etc.)
+- Checking DNSSEC status
+- Finding subdomains
+- Performing zone transfers
 
 ### 3. **`modules/ip_utils.py`**
-Provides functions to resolve domains to IPs, get IP geolocation, and perform reverse DNS lookups.
+Provides functions to:
+- Resolve domains to IP addresses
+- Get IP geolocation information
+- Perform reverse DNS lookups
 
 ### 4. **`modules/network_utils.py`**
-Includes WHOIS lookups, HTTP header retrieval, SSL certificate information fetching, and Nmap scans.
+Includes functions to:
+- Perform WHOIS lookups
+- Retrieve HTTP headers
+- Extract SSL certificate details
+- Run Nmap scans
+- Check domain response time
+- Scrape robots.txt
+- Identify HTTP methods
+- Extract emails associated with the domain
 
 ### 5. **`modules/ui_utils.py`**
-Formats and displays results to the console using the `rich` library for enhanced visuals.
+Formats and displays results to the console using the `rich` library for enhanced visuals, such as colorful panels and tables.
 
 ---
 
-## Updates in Beta v0.2
+## Updates in Beta v0.3
 
-- Added **Certificate Transparency Logs** retrieval using crt.sh to fetch domain certificates, including issuer details and validity periods.
-- Improved error handling and logging for all modules.
-- Enhanced subdomain discovery with crt.sh results.
-- Minor UI improvements for better readability.
+- **Email Extraction**: Added functionality to extract email addresses from WHOIS data and DNS records for better domain intelligence.
+- **Improved Subdomain Discovery**: Strengthened subdomain discovery using multiple methods, including crt.sh for certificate transparency logs.
+- **Zone Transfer Testing**: Included DNS zone transfer tests to check for potential misconfigurations.
+- **Enhanced UI**: Improved the presentation of results with `rich` for better readability and visual appeal.
+- **Bug Fixes & Performance Improvements**: Optimized various functions for faster execution and reduced memory usage.
 
 ---
 

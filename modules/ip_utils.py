@@ -1,4 +1,5 @@
 from typing import Dict, Optional
+from bs4 import BeautifulSoup
 import socket
 import requests
 
@@ -47,5 +48,26 @@ def reverse_dns_lookup(ip: str) -> str:
         host = socket.gethostbyaddr(ip)
         return host[0]
     except socket.herror:
-        return "No reverse DNS record found"    
+        return "No reverse DNS record found"   
+
+def scrape_reverse_ip(ip: str) -> list:
+    """
+    Perform a reverse IP lookup by scraping data from viewdns.info.
+
+    Args:
+        ip (str): The IP address to check.
+
+    Returns:
+        list: Domains hosted on the same IP.
+    """
+    try:
+        url = f'https://viewdns.info/reverseip/?host={ip}'
+        response = requests.get(url)
+        response.raise_for_status()  # Ensure we get a valid response
+        
+        soup = BeautifulSoup(response.text, 'html.parser')
+        domains = soup.find_all('td', {'class': 'list'})
+        return [domain.text for domain in domains]
+    except Exception as e:
+        return [f"Error: {e}"]
 

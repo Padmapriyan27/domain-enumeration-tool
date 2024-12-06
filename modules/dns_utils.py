@@ -2,6 +2,8 @@ import logging
 from typing import Dict, List, Union
 import dns.resolver
 import requests
+import dns.query
+import dns.zone
 
 def get_dns_records(domain: str) -> Dict[str, Union[List[str], str]]:
     """
@@ -70,8 +72,8 @@ def find_subdomains(domain: str) -> List[str]:
             return sorted({entry["name_value"] for entry in data})
         return []
     except Exception as e:
-        logging.error(f"Error finding subdomains: {e}")
-        return [f"Error: {e}"]
+        #logging.error(f"Error finding subdomains: {e}")
+        return logging.error([f"Error: {e}"])
 
 def get_domain_certificate_info(domain: str) -> List[Dict[str, str]]:
     """
@@ -102,8 +104,49 @@ def get_domain_certificate_info(domain: str) -> List[Dict[str, str]]:
                 certificates.append(cert_info)
             return certificates
         else:
-            logging.error(f"Failed to fetch certificate details: {response.status_code}")
-            return [{"Error": f"HTTP {response.status_code}"}]
+            #logging.error(f"Failed to fetch certificate details: {response.status_code}")
+            return logging.error([{"Error": f"HTTP {response.status_code}"}])
     except Exception as e:
-        logging.error(f"Error fetching certificate details: {e}")
-        return [{"Error": str(e)}]
+        #logging.error(f"Error fetching certificate details: {e}")
+        return logging.error([{"Error": str(e)}])
+
+def test_zone_transfer(domain: str) -> str:
+    """
+    Test for DNS zone transfer vulnerability.
+
+    Args:
+        domain (str): The domain to test.
+
+    Returns:
+        str: Zone transfer result.
+    """
+    try:
+        nameservers = dns.resolver.resolve(domain, "NS")
+        for ns in nameservers:
+            ns_ip = str(ns.target)
+            try:
+                zone = dns.zone.from_xfr(dns.query.xfr(ns_ip, domain))
+                return f"Zone transfer successful with nameserver: {ns_ip}\nZone Data:\n{zone.to_text()}"
+            except Exception as e:
+                pass
+        return "Zone transfer not allowed."
+    except Exception as e:
+        return f"Error: {e}"
+
+def get_txt_records(domain: str) -> list:
+    """
+    Retrieve TXT records for the given domain, which may include SPF, DKIM, and DMARC information.
+
+    Args:
+        domain (str): The domain to check for TXT records.
+
+    Returns:
+        list: TXT records for the domain.
+    """
+    try:
+        # Query the DNS for TXT records
+        records = get_dns_records(domain)  # Assuming get_dns_records only fetches A, AAAA, etc.
+        txt_records = [record for record in records if 'TXT' in record['type']]
+        return txt_records
+    except Exception as e:
+        return [f"Error fetching TXT records: {e}"]

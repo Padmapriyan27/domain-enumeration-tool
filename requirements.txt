@@ -2,3 +2,4 @@ rich
 dnspython
 requests
 pyfiglet
+beautifulsoup4

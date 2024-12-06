@@ -14,7 +14,7 @@ def print_banner() -> None:
     banner = pyfiglet.figlet_format("0xD4rkEYe", font='slant')
     console.print(banner, style="bold green")
     console.print("[bold green]0xD4rkEYe - Domain Enumeration Tool[/bold green]")
-    console.print("\t\t[bold green]Beta v0.2[/bold green]\n")
+    console.print("\t\t[bold green]Beta v0.3[/bold green]\n")
 
 def display_table(data: Dict[str, Union[str, Dict, list]], title: str) -> None:
     """

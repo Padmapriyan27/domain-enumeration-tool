@@ -3,6 +3,8 @@ import subprocess
 import requests
 import socket
 import ssl
+import time
+import re
 
 def get_whois_info(domain: str) -> str:
     """
@@ -82,3 +84,90 @@ def run_nmap(domain: str) -> str:
         return result.stdout
     except subprocess.CalledProcessError as e:
         return f"Error: {e.stderr}"
+
+def check_response_time(domain: str) -> float:
+    """
+    Measure the response time of the given domain.
+
+    Args:
+        domain (str): The domain to test.
+
+    Returns:
+        float: Response time in seconds.
+    """
+    try:
+        start_time = time.time()
+        response = requests.get(f"http://{domain}", timeout=5)
+        response.raise_for_status()
+        return round(time.time() - start_time, 3)
+    except requests.exceptions.RequestException as e:
+        return f"Error: {e}"
+
+def get_http_methods(domain: str) -> list:
+    """
+    Perform HTTP methods enumeration by sending a request with various methods.
+    
+    Args:
+        domain (str): The domain to test for HTTP methods.
+
+    Returns:
+        list: Supported HTTP methods.
+    """
+    methods = ['GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS', 'PATCH']
+    supported_methods = []
+    urls = [f"http://{domain}", f"https://{domain}"]  # Check both HTTP and HTTPS
+    
+    for url in urls:
+        for method in methods:
+            try:
+                response = requests.request(method, url, timeout=5)  # Added timeout to avoid hanging
+                if response.status_code not in [405, 501, 400]:  # Method Not Allowed, Not Implemented, Bad Request
+                    supported_methods.append(method)
+            except requests.exceptions.RequestException as e:
+                # Log the error for visibility
+                #print(f"Error testing {method} on {url}: {e}")
+                continue
+
+    # Remove duplicates (in case both http and https return the same methods)
+    return list(set(supported_methods))
+
+def scrape_robots_txt(domain: str) -> str:
+    """
+    Scrape the robots.txt file for a domain to find information about restricted paths.
+
+    Args:
+        domain (str): The domain to scrape.
+
+    Returns:
+        str: The content of the robots.txt file.
+    """
+    try:
+        response = requests.get(f"http://{domain}/robots.txt")
+        response.raise_for_status()
+        return response.text
+    except requests.exceptions.RequestException as e:
+        return f"Error fetching robots.txt: {e}"
+    
+def find_emails_for_domain(domain: str, data_sources: list) -> list:
+    """
+    Extract email addresses hosted on the specified domain from given data sources.
+
+    Args:
+        domain (str): The domain to filter email addresses by (e.g., example.com).
+        data_sources (list): A list of text data sources to search for emails.
+
+    Returns:
+        list: A list of email addresses hosted on the domain.
+    """
+    email_pattern = r'[a-zA-Z0-9._%+-]+@' + re.escape(domain)
+    emails = set()  # Use a set to avoid duplicate emails
+
+    for data in data_sources:
+        try:
+            matches = re.findall(email_pattern, data)
+            emails.update(matches)
+        except Exception as e:
+            print(f"Error processing data source: {e}")
+            continue
+
+    return list(emails)
