@@ -5,10 +5,6 @@ from modules.ui_utils import print_banner, display_table
 from argparse import ArgumentParser
 from rich.console import Console
 from rich.panel import Panel
-import logging
-
-# Setup logging for better error tracking
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 console = Console()
 

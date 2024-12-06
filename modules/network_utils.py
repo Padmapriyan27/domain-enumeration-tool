@@ -120,8 +120,8 @@ def get_http_methods(domain: str) -> list:
     for url in urls:
         for method in methods:
             try:
-                response = requests.request(method, url, timeout=5)  # Added timeout to avoid hanging
-                if response.status_code not in [405, 501, 400]:  # Method Not Allowed, Not Implemented, Bad Request
+                response = requests.request(method, url, timeout=5)  
+                if response.status_code not in [405, 501, 400]:
                     supported_methods.append(method)
             except requests.exceptions.RequestException as e:
                 # Log the error for visibility
@@ -167,7 +167,7 @@ def find_emails_for_domain(domain: str, data_sources: list) -> list:
             matches = re.findall(email_pattern, data)
             emails.update(matches)
         except Exception as e:
-            print(f"Error processing data source: {e}")
+            #print(f"Error processing data source: {e}")
             continue
 
     return list(emails)
