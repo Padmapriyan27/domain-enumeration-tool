@@ -1,5 +1,5 @@
 rich
-dnspython
 requests
 pyfiglet
+dnspython
 beautifulsoup4

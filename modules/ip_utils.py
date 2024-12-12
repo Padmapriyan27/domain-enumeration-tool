@@ -70,4 +70,3 @@ def scrape_reverse_ip(ip: str) -> list:
         return [domain.text for domain in domains]
     except Exception as e:
         return [f"Error: {e}"]
-

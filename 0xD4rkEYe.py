@@ -1,6 +1,7 @@
 from modules.dns_utils import *
 from modules.ip_utils import *
 from modules.network_utils import *
+from modules.dir_utils import *
 from modules.ui_utils import print_banner, display_table
 from argparse import ArgumentParser
 from rich.console import Console
@@ -9,12 +10,7 @@ from rich.panel import Panel
 console = Console()
 
 def main() -> None:
-    """
-    Main function to run the domain enumeration tool.
-    
-    Gathers various information about the domain, such as WHOIS data, DNS records, 
-    IP geolocation, and SSL certificate details, and displays the results in a user-friendly format.
-    """
+
     print_banner()
 
     parser = ArgumentParser(description="Domain Enumeration Tool")
@@ -47,13 +43,6 @@ def main() -> None:
     dnssec_status = check_dnssec(domain)
     console.print(Panel(f"DNSSEC Status: {dnssec_status}", style="bold green"))
 
-    data_sources = [whois_info, str(dns_info)]
-    emails = find_emails_for_domain(domain, data_sources)
-    if emails:
-        console.print(Panel(f"Emails found on {domain}: {', '.join(emails)}", style="bold cyan"))
-    else:
-        console.print(Panel(f"No emails found for {domain}.", style="bold red"))
-
     http_methods = get_http_methods(domain)
     console.print(Panel(f"Supported HTTP Methods: {', '.join(http_methods)}", style="bold yellow"))
 
@@ -65,6 +54,14 @@ def main() -> None:
 
     subdomains = find_subdomains(domain)
     console.print(Panel(f"Subdomains found: {', '.join(subdomains) if subdomains else 'No subdomains found.'}", style="bold green"))
+
+    wordlist_path = "/usr/share/wordlists/dirb/common.txt"
+    console.print("[bold blue]Enumerating directories and files...[/bold blue]")
+    directories = enumerate_directories_files(domain, wordlist_path)
+    if directories:
+        console.print(Panel("\n".join(directories), title="Directories and Files Found", border_style="green"))
+    else:
+        console.print(Panel("No directories or files found.", style="bold red"))
 
     cert_info = get_domain_certificate_info(domain)
     if cert_info:

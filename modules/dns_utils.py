@@ -146,3 +146,4 @@ def get_txt_records(domain: str) -> list:
         return txt_records
     except Exception as e:
         return [f"Error fetching TXT records: {e}"]
+    

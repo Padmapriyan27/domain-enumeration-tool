@@ -1,10 +1,10 @@
 # 0xD4rkEYe Domain Enumeration Tool
 
-## Beta v0.3
+## Beta v.0.4
 
 ### Overview
 
-The **Domain Enumeration Tool** is a unix-only  Python-based utility designed to perform an in-depth analysis of a target domain. This tool gathers a variety of information including DNS records, WHOIS data, IP information, geolocation data, SSL certificate details, HTTP headers, Nmap scan results, subdomains, and more. It is an essential resource for security researchers, penetration testers, and anyone looking to perform a comprehensive analysis of domain assets.
+The **Domain Enumeration Tool** is a unix-only  Python-based utility designed to perform an in-depth analysis of a target domain. This tool gathers a variety of information including DNS records, WHOIS data, IP information, geolocation data, SSL certificate details, HTTP headers, Nmap scan results, subdomains, and much more. It is an essential resource for security researchers, penetration testers, and anyone looking to perform a comprehensive analysis of domain OSINT.
 
 ### Features
 
@@ -16,7 +16,7 @@ The **Domain Enumeration Tool** is a unix-only  Python-based utility designed to
 - **HTTP Headers**: Retrieves and displays HTTP headers from the domain.
 - **Nmap Scan**: Performs an Nmap scan to detect open ports and services associated with the domain.
 - **Subdomain Discovery**: Finds subdomains using domain-based queries and certificate transparency logs.
-- **Emails Extraction**: Finds email addresses associated with the domain by scraping WHOIS and DNS data.
+- **Directory & File Enumeration**: Performs directory and file enumeration to find hidden directories and files associated with the domain.
 - **Zone Transfer Test**: Verifies if a DNS zone transfer is allowed.
 - **DNSSEC Check**: Checks the status of DNSSEC for the domain.
 - **Robots.txt Scraping**: Fetches the robots.txt file to determine any rules regarding search engine crawling.
@@ -32,12 +32,6 @@ The **Domain Enumeration Tool** is a unix-only  Python-based utility designed to
   - `rich`
   - `pyfiglet`
   - `beautifulsoup4`
-
-Install the required libraries by running:
-
-```bash
-pip install -r requirements.txt
-```
 
 ---
 
@@ -91,9 +85,9 @@ Domain: example.com
   - sub1.example.com
   - sub2.example.com
 
-- Emails:
-  - contact@example.com
-  - support@example.com
+- Directory & File Enumeration:
+  - /hidden-directory
+  - /secret-file.txt
 
 - HTTP Headers:
   - Content-Type: text/html
@@ -121,20 +115,17 @@ Domain: example.com
 The main script that orchestrates all domain enumeration tasks.
 
 ### 2. **`modules/dns_utils.py`**
-Contains functions for:
 - Querying DNS records (A, MX, TXT, etc.)
 - Checking DNSSEC status
 - Finding subdomains
 - Performing zone transfers
 
 ### 3. **`modules/ip_utils.py`**
-Provides functions to:
 - Resolve domains to IP addresses
 - Get IP geolocation information
 - Perform reverse DNS lookups
 
 ### 4. **`modules/network_utils.py`**
-Includes functions to:
 - Perform WHOIS lookups
 - Retrieve HTTP headers
 - Extract SSL certificate details
@@ -142,20 +133,12 @@ Includes functions to:
 - Check domain response time
 - Scrape robots.txt
 - Identify HTTP methods
-- Extract emails associated with the domain
 
-### 5. **`modules/ui_utils.py`**
+### 5. **`modules/dir_utils.py`**
+- enumerate directories and files
+
+### 6. **`modules/ui_utils.py`**
 Formats and displays results to the console using the `rich` library for enhanced visuals, such as colorful panels and tables.
-
----
-
-## Updates in Beta v0.3
-
-- **Email Extraction**: Added functionality to extract email addresses from WHOIS data and DNS records for better domain intelligence.
-- **Improved Subdomain Discovery**: Strengthened subdomain discovery using multiple methods, including crt.sh for certificate transparency logs.
-- **Zone Transfer Testing**: Included DNS zone transfer tests to check for potential misconfigurations.
-- **Enhanced UI**: Improved the presentation of results with `rich` for better readability and visual appeal.
-- **Bug Fixes & Performance Improvements**: Optimized various functions for faster execution and reduced memory usage.
 
 ---
 
