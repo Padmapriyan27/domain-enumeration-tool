@@ -38,11 +38,11 @@ def enumerate_directories_files(domain: str, wordlist_path: str, threads: int = 
         try:
             response = requests.head(url, timeout=5)
             if response.status_code == 200:
-                console.print(f"[bold green]Found: {url}[/bold green]")
-                found.append(url)
+                console.print(f"[bold green]Found: /{path} (200 OK)[/bold green]")
+                found.append(f"/{path}")
             elif response.status_code == 403:
-                console.print(f"[bold yellow]Forbidden: {url}[/bold yellow]")
-                found.append(f"{url} [Forbidden]")
+                console.print(f"[bold yellow]Forbidden: /{path} (403 Forbidden)[/bold yellow]")
+                found.append(f"/{path} [Forbidden]")
         except requests.RequestException:
             pass
         finally:
