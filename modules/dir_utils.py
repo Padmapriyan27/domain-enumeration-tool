@@ -48,8 +48,6 @@ def enumerate_directories_files(domain: str, wordlist_path: str, threads: int = 
         finally:
             progress.update(task_id, advance=1)
 
-    console.print("[bold blue]Starting enumeration with progress...[/bold blue]")
-
     # Initialize Progress bar
     with Progress() as progress:
         task_id = progress.add_task("[cyan]Enumerating directories and files...", total=len(paths))
