@@ -1,8 +1,6 @@
 from typing import Dict, Union
 from rich.console import Console
 from rich.table import Table
-from rich.panel import Panel
-from rich.color import Color
 import pyfiglet
 
 console = Console()

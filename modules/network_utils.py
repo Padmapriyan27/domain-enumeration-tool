@@ -4,7 +4,6 @@ import requests
 import socket
 import ssl
 import time
-import re
 
 def get_whois_info(domain: str) -> str:
     """
@@ -124,8 +123,6 @@ def get_http_methods(domain: str) -> list:
                 if response.status_code not in [405, 501, 400]:
                     supported_methods.append(method)
             except requests.exceptions.RequestException as e:
-                # Log the error for visibility
-                #print(f"Error testing {method} on {url}: {e}")
                 continue
 
     # Remove duplicates (in case both http and https return the same methods)

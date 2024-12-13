@@ -71,7 +71,6 @@ def find_subdomains(domain: str) -> List[str]:
             return sorted({entry["name_value"] for entry in data})
         return []
     except Exception as e:
-        #logging.error(f"Error finding subdomains: {e}")
         return [f"Error: {e}"]
 
 def get_domain_certificate_info(domain: str) -> List[Dict[str, str]]:

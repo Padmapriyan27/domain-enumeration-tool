@@ -55,7 +55,7 @@ def main() -> None:
     subdomains = find_subdomains(domain)
     console.print(Panel(f"Subdomains found: {', '.join(subdomains) if subdomains else 'No subdomains found.'}", style="bold green"))
 
-    wordlist_path = "/usr/share/wordlists/dirb/common.txt"
+    wordlist_path = "wordlists.txt"
     console.print("[bold blue]Enumerating directories and files...[/bold blue]")
     directories = enumerate_directories_files(domain, wordlist_path)
     if directories:

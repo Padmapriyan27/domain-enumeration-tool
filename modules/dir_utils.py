@@ -8,7 +8,6 @@ console = Console()
 def enumerate_directories_files(domain: str, wordlist_path: str, threads: int = 20) -> list:
     """
     Enumerates directories and files on the given domain using a wordlist.
-    This version includes a progress bar for better visualization.
     
     Args:
         domain (str): The target domain or base URL.
@@ -16,7 +15,7 @@ def enumerate_directories_files(domain: str, wordlist_path: str, threads: int = 
         threads (int): Number of threads for concurrent requests.
 
     Returns:
-        list: A list of found directories/files.
+        list: A list of found directories/files with status and size.
     """
     found = []
 
@@ -36,13 +35,19 @@ def enumerate_directories_files(domain: str, wordlist_path: str, threads: int = 
     def test_path(path: str, progress: Progress, task_id: str) -> None:
         url = f"{domain}{path}"
         try:
-            response = requests.head(url, timeout=5)
+            response = requests.head(url, timeout=5, allow_redirects=False)
+            size = response.headers.get("Content-Length", "Unknown")
+
             if response.status_code == 200:
-                console.print(f"[bold green]Found: /{path} (200 OK)[/bold green]")
-                found.append(f"/{path}")
+                console.print(f"[bold green]Found: /{path} \t\t(200 OK, Size: {size})[/bold green]\n")
+                found.append(f"/{path} \t\t(200 OK, Size: {size})\n")
+            elif response.status_code == 301:
+                location = response.headers.get("Location", "Unknown")
+                console.print(f"[bold cyan]Redirect: /{path} \t\t(301 Redirect -> {location})[/bold cyan]\n")
+                found.append(f"/{path} \t\t(301 Redirect -> {location})\n")
             elif response.status_code == 403:
-                console.print(f"[bold yellow]Forbidden: /{path} (403 Forbidden)[/bold yellow]")
-                found.append(f"/{path} [Forbidden]")
+                console.print(f"[bold yellow]Forbidden: /{path} \t\t(403 Forbidden, Size: {size})[/bold yellow]\n")
+                found.append(f"/{path} \t\t(403 Forbidden, Size: {size})\n")
         except requests.RequestException:
             pass
         finally:
@@ -51,7 +56,7 @@ def enumerate_directories_files(domain: str, wordlist_path: str, threads: int = 
     # Initialize Progress bar
     with Progress() as progress:
         task_id = progress.add_task("[cyan]Enumerating directories and files...", total=len(paths))
-        
+
         with ThreadPoolExecutor(max_workers=threads) as executor:
             for path in paths:
                 executor.submit(test_path, path, progress, task_id)
